@@ -1,0 +1,137 @@
+expose:
+  type: clusterIP
+  tls:
+    enabled: true
+    certSource: auto
+    auto:
+      commonName: "harbor"
+  clusterIP:
+    name: harbor
+    annotations: {}
+    ports:
+      httpPort: 80
+      httpsPort: 443
+      notaryPort: 4443
+  nodePort:
+    name: harbor
+    ports:
+      http:
+        port: 80
+        nodePort: 30002
+      https:
+        port: 443
+        nodePort: 30003
+      notary:
+        port: 4443
+        nodePort: 30004
+  loadBalancer:
+    name: harbor
+    IP: ""
+    ports:
+      httpPort: 80
+      httpsPort: 443
+      notaryPort: 4443
+    annotations: {}
+    sourceRanges: []
+
+externalURL: https://harbor.elb.moura.com
+
+
+internalTLS:
+  enabled: true
+  certSource: "auto"
+
+persistence:
+  enabled: true
+  resourcePolicy: "keep"
+  persistentVolumeClaim:
+    registry:
+      existingClaim: ""
+      storageClass: ""
+      subPath: ""
+      accessMode: ReadWriteOnce
+      size: 5Gi
+      annotations: {}
+    chartmuseum:
+      existingClaim: ""
+      storageClass: ""
+      subPath: ""
+      accessMode: ReadWriteOnce
+      size: 5Gi
+      annotations: {}
+    jobservice:
+      jobLog:
+        existingClaim: ""
+        storageClass: ""
+        subPath: ""
+        accessMode: ReadWriteOnce
+        size: 1Gi
+        annotations: {}
+      scanDataExports:
+        existingClaim: ""
+        storageClass: ""
+        subPath: ""
+        accessMode: ReadWriteOnce
+        size: 1Gi
+        annotations: {}
+    database:
+      existingClaim: ""
+      storageClass: ""
+      subPath: ""
+      accessMode: ReadWriteOnce
+      size: 1Gi
+      annotations: {}
+    # If external Redis is used, the following settings for Redis will
+    # be ignored
+    redis:
+      existingClaim: ""
+      storageClass: ""
+      subPath: ""
+      accessMode: ReadWriteOnce
+      size: 1Gi
+      annotations: {}
+    trivy:
+      existingClaim: ""
+      storageClass: ""
+      subPath: ""
+      accessMode: ReadWriteOnce
+      size: 5Gi
+      annotations: {}
+
+
+existingSecretAdminPasswordKey: HARBOR_ADMIN_PASSWORD
+
+harborAdminPassword: "Harbor12345"
+
+caSecretName: ""
+
+secretKey: "not-a-secure-key"
+existingSecretSecretKey: ""
+
+proxy:
+  httpProxy:
+  httpsProxy:
+  noProxy: 127.0.0.1,localhost,.local,.internal
+  components:
+    - core
+    - jobservice
+    - trivy
+
+enableMigrateHelmHook: false
+
+
+database:
+  type: external
+  external:
+    host: "192.168.88.24"
+    port: "5432"
+    username: "harbor"
+    password: "12345"
+    coreDatabase: "registry"
+    notaryServerDatabase: "notary_server"
+    notarySignerDatabase: "notary_signer"
+    existingSecret: ""
+    sslmode: "disable"
+  maxIdleConns: 100
+  maxOpenConns: 900
+  podAnnotations: {}
